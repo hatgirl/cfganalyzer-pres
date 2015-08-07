@@ -67,6 +67,20 @@
 \begin{itemize}
 \item Computer science theory courses introduce automata and languages
 \vspace{0.1in}
+\end{itemize}
+
+\begin{figure}
+	\centering \includegraphics[scale=0.3]{automata}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Tools for CS theory students}
+
+\begin{itemize}
+\item Computer science theory courses introduce automata and languages
+\vspace{0.1in}
 \item Software for analyzing, grading, and providing feedback on automata and grammars would benefit students
 \vspace{0.1in}
 \item Much work has already been done for regular languages \footfullcite{Bilska97} \footfullcite {Alur:2013} 
@@ -108,13 +122,15 @@ $G':$\\
 \begin{frame}
 \frametitle{Because these problems are undecidable ...}
 \begin{itemize}
-\item Can't automate grading
+\item Can't automate grading (generally)
 \vspace{0.1in}
-\item Can't automate feedback
+\item Can't automate feedback (generally)
 \end{itemize}
 \end{frame}
 
+
 %-----------------------------------------------------
+
 \section{The Approach}
 
 \begin{frame}
@@ -136,7 +152,7 @@ Given grammars $G$ and $G'$, does $\mathcal{L}(G) = \mathcal{L}(G')$ for all wor
 \begin{frame}
 \frametitle {CFGAnalyzer}
 \begin{itemize}
-\item Axelsson, Heljanko, and Lange introduced an algorithm and a tool for converting bounded instances of problems on context-free grammars into boolean formulae in conjunctive normal form \footfullcite{CFGAnalyzer}
+\item Axelsson, Heljanko, and Lange introduced an algorithm and a tool \footfullcite{CFGAnalyzer} for converting bounded instances of problems on context-free grammars into boolean formulae in conjunctive normal form 
 
 \vspace{0.1in}
 \end{itemize}
