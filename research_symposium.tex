@@ -1,0 +1,226 @@
+\documentclass{beamer}
+\mode<presentation>{\usetheme{CambridgeUS}}
+\usecolortheme{beaver}
+\usepackage{caption}
+\beamertemplatenavigationsymbolsempty
+\usepackage{fancybox}
+\usepackage{csquotes}
+
+
+\newenvironment{myfont}{\fontfamily{LinuxLibertineT-OsF}\selectfont}{\par}
+\usepackage[url=false,
+            isbn=false,
+            backref=false,
+            style=ieee,
+            backend=biber,
+            abbreviate=true,
+            natbib=true]{biblatex}
+           
+%\usepackage[hyperfootnotes=false]{hyperref} 
+\addbibresource{presbib.bib}
+\bibliography{}
+
+\usepackage[normalem]{ulem}
+\setbeamertemplate{bibliography item}[text]
+
+
+\renewcommand{\bibfont}{\footnotesize}
+
+%\ExecuteBibliographyOptions{labelyear}
+
+\DeclareCiteCommand{\morecite}[\mkbibparens]%
+  {\usebibmacro{prenote}}%
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{%
+     \printfield{prefixnumber}%
+     \printfield{labelnumber}%
+     \ifbool{bbx:subentry}
+       {\printfield{entrysetcount}}
+       {}}%
+   \ifnameundef{labelname}%
+    {}
+    {\setunit{\addcomma\space}%
+     \printnames{labelname}}%
+   \setunit{\addcomma\space}%
+   \printfield{labelyear}}
+  {\multicitedelim}%
+  {\usebibmacro{postnote}}%
+
+\usepackage{pst-node}
+\psset{arrowscale=2,arrows=->}
+\def\VPh{\vphantom{\displaystyle\sum_{i=n}^m {i^2}}}
+\def\psBox#1#2{\psframebox[fillcolor=#1,fillstyle=solid]{\VPh\displaystyle#2}}
+
+\title[Analysis of CS Theory Assignments]{Towards Automated Analysis of CS Theory Assignments}
+\institute[RIT]{Rochester Institute of Technologoy}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{The Problem}
+
+\begin{frame}
+\frametitle{Tools for CS theory students}
+
+\begin{itemize}
+\item Computer science theory courses introduce automata and languages
+\vspace{0.1in}
+\item Software for analyzing, grading, and providing feedback on automata and grammars would benefit students
+\vspace{0.1in}
+\item Much work has already been done for regular languages \footfullcite{Bilska97} \footfullcite {Alur:2013} 
+\vspace{0.1in}
+\item But many of the questions we'd like to answer about context-free languages are undecidable
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ambiguity and equivalence}
+\begin{block}{Ambiguity}
+Given a grammar $G$ is there a word $w , \; w \in \mathcal{L}(G)$, that has more than one leftmost derivation?
+\end{block}
+
+\pause 
+\vspace{0.2in}
+$G:$\\
+\hspace*{10pt} $S \rightarrow  A \; | \; \epsilon$\\
+\hspace*{10pt} $A \rightarrow   \epsilon$
+\end{frame}
+
+\begin{frame}
+\frametitle{Ambiguity and equivalence}
+\begin{block}{Equivalence}
+Given grammars $G$ and $G'$, does $\mathcal{L}(G) = \mathcal{L}(G')$? 
+\end{block}
+
+\pause 
+\vspace{0.2in}
+$G:$\\
+\hspace*{10pt} $S \rightarrow  A \; | \; \epsilon$\\
+\hspace*{10pt} $A \rightarrow   \epsilon$
+
+\vspace{0.2in}
+$G':$\\
+\hspace*{10pt} $S \rightarrow \epsilon$
+\end{frame}
+
+\begin{frame}
+\frametitle{Because these problems are undecidable ...}
+\begin{itemize}
+\item Can't automate grading
+\vspace{0.1in}
+\item Can't automate feedback
+\end{itemize}
+\end{frame}
+
+%-----------------------------------------------------
+\section{The Approach}
+
+\begin{frame}
+\frametitle {Bounded versions of problems}
+
+\begin{block}{Ambiguity}
+Given a grammar $G$, is there a word $w, \; w \in \mathcal{L}(G) , \; |w| \leq k$ that has more than one leftmost derivation?
+\end{block}
+
+\vspace{0.2in}
+
+\begin{block}{Equivalence}
+Given grammars $G$ and $G'$, does $\mathcal{L}(G) = \mathcal{L}(G')$ for all words of length $\leq k$? 
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle {CFGAnalyzer}
+\begin{itemize}
+\item Axelsson, Heljanko, and Lange introduced an algorithm and a tool for converting bounded instances of problems on context-free grammars into boolean formulae in conjunctive normal form \footfullcite{CFGAnalyzer}
+
+\vspace{0.1in}
+\end{itemize}
+
+\only<1-1>{
+		\hspace{10pt}$G: $\\
+		\hspace{20pt} $S \rightarrow 0 S 0 \; | \; 1 S 1 \; | \; \epsilon  \; \; \; \; \implies \; \; \; \; (a_0 \vee b_0 \vee c_1) \wedge (a_2 \vee \neg b_1 \vee \neg d_0 ) \wedge ... $
+}
+
+\only<2-2>
+{\begin{itemize} 
+\item Once the problem is expressed in CNF, a SAT solver can find satisfying assignments (if any exist)! 
+\vspace{0.1in}
+\item A satisfying assignment would encode a witness for ambiguity or inequivalence
+\end{itemize}
+\centering $w | w \in \mathcal{L}(G), w \not \in \mathcal{L}(G')$}
+
+\only<3-3>
+{\begin{itemize}
+\item A modification to this algorithm would find all witnesses, giving a student a sense of how wrong their solution might be or how ambiguous their grammar is 
+\end{itemize}
+\centering $W =\{w | w \in \mathcal{L}(G), w \not \in \mathcal{L}(G')$\}}
+
+\end{frame}
+
+%------------------------------------------------------
+\section{Results}
+
+\begin{frame}
+\frametitle{What is a reasonable value for the bound?}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.49\textwidth}
+		\centering
+		\includegraphics[scale=0.30]{firstwitnessambig}
+	\end{minipage}
+	\begin{minipage}{0.49\textwidth}
+		\centering
+		\includegraphics[scale=0.30]{firstwitnessequiv}
+	\end{minipage}
+	\caption*{What proportion of the benchmark data has a shortest witness of length $n$?}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Integration of PicoSAT}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.49\textwidth}
+		\centering
+		\includegraphics[scale=0.30]{zchaffambig}
+	\end{minipage}
+	\begin{minipage}{0.49\textwidth}
+		\centering
+		\includegraphics[scale=0.30]{picosatambig}
+	\end{minipage}
+	\caption*{Execution times for grammars with witnesses of length $k$ in zChaff \footfullcite{chaff} vs. PicoSAT \footfullcite{picoSAT}}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Future work}
+\begin{itemize}
+\item Integrate the CFGAnalyzer tool, along with its modifications, into JFLAP
+\vspace{0.1in}
+\item Explore additional methods of assigning partial credit (edit distance?)
+\vspace{0.1in}
+\item Test on more student samples!
+\end{itemize}
+\end{frame}
+
+\section{References}
+\begin{frame}[t,allowframebreaks] 
+	\nocite{*}
+	\frametitle{References}
+	\printbibliography
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+\frametitle{Thank you!}
+\begin{center} \LARGE Questions?
+\end{center}
+\end{frame}
+\end{document}
